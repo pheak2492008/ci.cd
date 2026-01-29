@@ -1,10 +1,9 @@
-const request = require("supertest");
-const app = require("express")();
+const express = require("express");
+const app = express();
 
-describe("GET /", () => {
-  test("should return hello message", async () => {
-    const res = await request(app).get("/");
-    expect(res.statusCode).toBe(200);
-  });
+app.get("/", (req, res) => {
+  res.send("CI/CD is working 🚀");
 });
-expect(res.body.message).toBe("Hello Express 🚀");
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
