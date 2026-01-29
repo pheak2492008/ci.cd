@@ -1,5 +1,5 @@
 const request = require("supertest");
-const app = require("./index");
+const app = require("express")();
 
 describe("GET /", () => {
   test("should return hello message", async () => {
