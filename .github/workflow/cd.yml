@@ -1,31 +1,47 @@
-name: Node.js CI/CD with Render
+name: Node.js CI/CD
 
 on:
   push:
     branches:
-      - main
+      - main # triggers when you push to main branch
 
 jobs:
-  build-and-test:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-      - name: Setup Node
+      # 1. Checkout your code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # 2. Setup Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18
-      - run: npm install
-      - run: npm test
+          node-version: "18"
 
-  deploy-to-render:
-    needs: build-and-test
-    runs-on: ubuntu-latest
+      # 3. Install dependencies
+      - name: Install dependencies
+        run: npm install
 
-    steps:
-      - uses: actions/checkout@v3
-      - name: Deploy to Render
-        uses: render-examples/deploy-action@v1
+      # 4. Run tests
+      - name: Run tests
+        run: npm test
+
+      # 5. Build project (if needed)
+      - name: Build project
+        run: npm run build
+
+      # 6. Deploy (example: to a server using SSH)
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v0.1.6
         with:
-          apiKey: ${{ secrets.RENDER_API_KEY }}
-          serviceId: <YOUR_RENDER_SERVICE_ID>
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: 22
+          script: |
+            cd /var/www/my-app
+            git pull
+            npm install
+            pm2 restart all
